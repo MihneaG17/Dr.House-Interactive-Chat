@@ -18,8 +18,8 @@ Mai jos sunt detaliate cele 10 User Stories care au stat la baza dezvoltării ac
   - [ ] Diagnosticul real rămâne strict ascuns în backend.
 
 **US-02: Personalitățile asistenților virtuali**
-> **Ca** sistem, **vreau** să injectez prompturi de sistem divergente celor doi agenți AI, **pentru a** asigura o dezbatere contradictorie și argumente complet diferite.
-* **Criterii de acceptare:** - [ ] Cele două modele LLM locale primesc instrucțiuni diferite la inițializare (ex. Agentul 1 axat pe simptome acute, Agentul 2 pe istoric, etc). 
+> **Ca** sistem, **vreau** să injectez prompturi de sistem divergente celor doi/trei agenți AI, **pentru a** asigura o dezbatere contradictorie și argumente complet diferite.
+* **Criterii de acceptare:** - [ ] Cele două/trei modele LLM locale primesc instrucțiuni diferite la inițializare (ex. Agentul 1 axat pe simptome acute, Agentul 2 pe istoric, etc). 
   - [ ] Răspunsurile reflectă constant aceste unghiuri medicale.
 
 **US-03: Urmărirea dezbaterii**
