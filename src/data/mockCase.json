@@ -1,0 +1,44 @@
+{
+  "caseId": "CASE-001",
+  "patient": {
+    "name": "Alexandru Popescu",
+    "age": 45,
+    "gender": "M",
+    "initialSymptoms": [
+      "Febră intermitentă (38.5°C)",
+      "Cefalee severă",
+      "Confuzie ușoară"
+    ],
+    "medicalHistory": [
+      "Hipertensiune arterială (controlată sub medicație)",
+      "Fără alergii cunoscute",
+      "Călătorie recentă în zonă tropicală acum 2 săptămâni"
+    ]
+  },
+  "investigations": {
+    "available": [
+      "Hemoleucograma",
+      "RMN Cerebral",
+      "Puncție lombară",
+      "Test PCR Malarie"
+    ],
+    "results": {
+      "Hemoleucograma": "Leucocitoză moderată, trombocitopenie.",
+      "RMN Cerebral": "Fără leziuni focale sau semne de hipertensiune intracraniană.",
+      "Puncție lombară": "Pleocitoză cu predominanță limfocitară, proteine ușor crescute.",
+      "Test PCR Malarie": "Negativ."
+    },
+    "defaultError": "Echipamentul nu este disponibil sau analiza este nerelevantă pentru simptomatologia prezentată."
+  },
+  "agents": {
+    "availableSpecializations": [
+      "Boli Infecțioase",
+      "Neurologie",
+      "Medicină Internă"
+    ]
+  },
+  "resolution": {
+    "actualDiagnosis": "Encefalită virală",
+    "requiredClues": ["Puncție lombară", "RMN Cerebral"]
+  }
+}
