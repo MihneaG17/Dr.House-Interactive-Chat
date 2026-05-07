@@ -16,5 +16,15 @@
     "Fără alergii medicamentoase cunoscute",
     "Istoric familial: Tatăl a suferit un infarct miocardic la 60 de ani"
   ],
+  "investigations": {
+    "radiografie": "Infiltrate interstițiale difuze bilaterale, fără revărsat pleural vizibil.",
+    "raze": "Infiltrate interstițiale difuze bilaterale, fără revărsat pleural vizibil.",
+    "ekg": "Ritm sinusal, 85 bpm, fără modificări ischemice acute. Fără semne de sindrom coronarian acut.",
+    "ecg": "Ritm sinusal, 85 bpm, fără modificări ischemice acute. Fără semne de sindrom coronarian acut.",
+    "hemoleucogramă": "Leucocite normale (8500/mmc), limfopenie ușoară. Hemoglobină 14.5 g/dL.",
+    "pcr": "Negativ pentru SARS-CoV-2.",
+    "sânge": "Leucocite normale (8500/mmc), limfopenie ușoară. Troponina I în limite normale.",
+    "markeri": "Troponina I în limite normale (<0.01 ng/mL)."
+  },
   "hiddenRealDiagnosis": "Pneumonie interstițială atipică (posibil Mycoplasma pneumoniae)"
 }
