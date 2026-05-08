@@ -1,0 +1,30 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies (Aici e folderul uriaș cu pachete)
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables (AICI ESTE PROTECȚIA PENTRU CHEIA TA API)
+.env
+.env.*
+!.env.example
+
+# Editor directories and files (Fișiere generate automat de VS Code/Mac)
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
