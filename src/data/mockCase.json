@@ -1,30 +1,77 @@
-{
-  "id": "case-001",
-  "patientName": "Ion Popescu",
-  "age": 45,
-  "gender": "Masculin",
-  "occupation": "Inginer constructor",
-  "initialSymptoms": [
-    "Febră moderată (38.2°C) de 3 zile",
-    "Tuse seacă, iritativă",
-    "Oboseală accentuată (astenie)",
-    "Durere toracică difuză la inspir profund"
-  ],
-  "medicalHistory": [
-    "Fumător de 15 ani (1 pachet/zi)",
-    "Hipertensiune arterială stadiul 1, controlată sub tratament (Ramipril)",
-    "Fără alergii medicamentoase cunoscute",
-    "Istoric familial: Tatăl a suferit un infarct miocardic la 60 de ani"
-  ],
-  "investigations": {
-    "radiografie": "Infiltrate interstițiale difuze bilaterale, fără revărsat pleural vizibil.",
-    "raze": "Infiltrate interstițiale difuze bilaterale, fără revărsat pleural vizibil.",
-    "ekg": "Ritm sinusal, 85 bpm, fără modificări ischemice acute. Fără semne de sindrom coronarian acut.",
-    "ecg": "Ritm sinusal, 85 bpm, fără modificări ischemice acute. Fără semne de sindrom coronarian acut.",
-    "hemoleucogramă": "Leucocite normale (8500/mmc), limfopenie ușoară. Hemoglobină 14.5 g/dL.",
-    "pcr": "Negativ pentru SARS-CoV-2.",
-    "sânge": "Leucocite normale (8500/mmc), limfopenie ușoară. Troponina I în limite normale.",
-    "markeri": "Troponina I în limite normale (<0.01 ng/mL)."
+[
+  {
+    "id": "case-001",
+    "patientName": "Ion Popescu",
+    "age": 45,
+    "gender": "Masculin",
+    "occupation": "Inginer constructor",
+    "initialSymptoms": [
+      "Durere toracică intensă (gheară)",
+      "Transpirații reci",
+      "Greață",
+      "Iradiere în brațul stâng"
+    ],
+    "medicalHistory": [
+      "Fumător (1 pachet/zi)",
+      "Hipertensiune arterială",
+      "Tatăl a avut infarct la 60 de ani"
+    ],
+    "investigations": {
+      "ekg": "Supradenivelare de segment ST în teritoriul anterior (V1-V4).",
+      "ecg": "Supradenivelare de segment ST în teritoriul anterior (V1-V4).",
+      "sânge": "Troponina I crescută semnificativ (2.5 ng/mL).",
+      "markeri": "Troponina I crescută semnificativ (2.5 ng/mL).",
+      "radiografie": "Fără anomalii acute."
+    },
+    "realDiagnosis": "Infarct miocardic acut anterior"
   },
-  "hiddenRealDiagnosis": "Pneumonie interstițială atipică (posibil Mycoplasma pneumoniae)"
-}
+  {
+    "id": "case-002",
+    "patientName": "Maria Ionescu",
+    "age": 32,
+    "gender": "Feminin",
+    "occupation": "Casieriță",
+    "initialSymptoms": [
+      "Febră 39°C de 4 zile",
+      "Tuse seacă persistentă",
+      "Pierderea mirosului (anosmie)",
+      "Dificultate la respirație"
+    ],
+    "medicalHistory": [
+      "Astm bronșic ușor",
+      "Fără istoric familial relevant"
+    ],
+    "investigations": {
+      "radiografie": "Infiltrate interstițiale difuze bilaterale (aspect de sticlă mată).",
+      "raze": "Infiltrate interstițiale difuze bilaterale (aspect de sticlă mată).",
+      "pcr": "Pozitiv pentru SARS-CoV-2.",
+      "hemoleucogramă": "Limfopenie severă, leucocite la limita inferioară.",
+      "sânge": "D-dimeri ușor crescuți, PCR crescut."
+    },
+    "realDiagnosis": "Infecție cu virusul SARS-CoV-2 (COVID-19)"
+  },
+  {
+    "id": "case-003",
+    "patientName": "Vasile Marin",
+    "age": 55,
+    "gender": "Masculin",
+    "occupation": "Muncitor agricol",
+    "initialSymptoms": [
+      "Vărsături repetate",
+      "Crampe abdominale severe",
+      "Transpirații abundente",
+      "Pupile miotice (mici)"
+    ],
+    "medicalHistory": [
+      "Cunoscut cu diabet zaharat tip 2",
+      "Lucrează cu substanțe chimice/pesticide"
+    ],
+    "investigations": {
+      "sânge": "Colinesteraza serică sever scăzută.",
+      "toxicologie": "Niveluri scăzute de pseudocolinesterază. Semne de intoxicație.",
+      "ecografie": "Fără anomalii acute abdominale.",
+      "ekg": "Bradicardie sinusală, 50 bpm."
+    },
+    "realDiagnosis": "Intoxicație acută cu organofosforice (Pesticide)"
+  }
+]
