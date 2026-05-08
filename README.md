@@ -3,6 +3,13 @@
 Acest proiect este o aplicație interactivă care simulează un proces de diagnosticare medicală bazat pe arhitectura de tip *Multi-Agent AI Debate*. Doi sau trei agenți AI (modele locale de limbaj) acționează ca asistenți medicali cu opinii divergente, în timp ce utilizatorul preia rolul doctorului principal, având puterea de a cere investigații suplimentare și de a lua decizia finală.
 
 ---
+## 👥 Membrii echipei
+Dobrin Mihnea-Gabriel </br>
+Anghel Alexandru-Mihai </br>
+Condrea Ion-Luca </br>
+Constandache Vlad-Ciprian </br>
+
+---
 
 ## 📋 Product Backlog & User Stories
 
