@@ -1,5 +1,20 @@
-export const checkWinCondition = (selectedDiagnosis, actualDiagnosis) => {
-  return selectedDiagnosis.trim().toLowerCase() === actualDiagnosis.trim().toLowerCase();
+export const checkWinCondition = (userInput, actualDiagnosis) => {
+  const normalizedInput = userInput.trim().toLowerCase();
+  const normalizedActual = actualDiagnosis.trim().toLowerCase();
+  
+  if (normalizedInput === normalizedActual) return true;
+  
+  const keywords = normalizedActual.split(/\s+/).filter(w => w.length > 4);
+  let matchCount = 0;
+  
+  for (const keyword of keywords) {
+    const cleanKeyword = keyword.replace(/[^a-zțșăîâ]/g, '');
+    if (cleanKeyword && normalizedInput.includes(cleanKeyword)) {
+      matchCount++;
+    }
+  }
+  
+  return matchCount >= 1;
 };
 
 export const handleInvestigationRequest = (request, caseData) => {

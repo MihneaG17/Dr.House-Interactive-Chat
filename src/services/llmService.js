@@ -1,7 +1,6 @@
 // src/services/llmService.js
 
-export const fetchAiResponse = async (agentRole, userPrompt) => {
-  // Preluăm cheia secretă din fișierul .env
+export const fetchAiResponse = async (agentRole, userPrompt, agentIndex) => {
   const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
   if (!apiKey) {
@@ -9,21 +8,16 @@ export const fetchAiResponse = async (agentRole, userPrompt) => {
     return "Eroare: Cheia API nu este configurată.";
   }
 
-  // AICI ESTE SECRETUL PENTRU BAREM: 2 Modele diferite!
-  // Setăm un model default (Llama 3 de la Meta) pentru primul agent
-  let modelToUse = "llama3-8b-8192";
+  // Să ne asigurăm că aplicația citește corect cheia (afișăm doar primele 6 litere pentru securitate)
+  console.log("INFO: Facem apel cu cheia care începe cu:", apiKey.substring(0, 6));
 
-  // Dacă agentul are alt rol (ex: Boli Infecțioase), folosim alt model (Mixtral)
-  // *Schimbă "Boli Infecțioase" cu specializarea pe care o ai tu în aplicație pentru Agentul 2
-  if (agentRole === "Boli Infecțioase") {
-    modelToUse = "mixtral-8x7b-32768";
-  }
+  const modelToUse = agentIndex === 0 ? "llama-3.1-8b-instant" : "llama-3.3-70b-versatile";
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        "Authorization": `Bearer ${apiKey.trim()}`, // .trim() taie spatiile invizibile adaugate din greseala
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -31,24 +25,90 @@ export const fetchAiResponse = async (agentRole, userPrompt) => {
         messages: [
           {
             role: "system",
-            content: `Ești un medic specialist cu rolul de: ${agentRole}. Analizează cazul și fii concis. Nu pune întrebări, doar trage concluzii medicale bazate pe date.`
+            content: `Ești un medic specialist cu rolul de: ${agentRole}. Analizează cazul și fii extrem de concis (maxim 3-4 propoziții scurte). Folosește un limbaj accesibil, ușor de înțeles de către o persoană fără pregătire medicală, evitând jargonul complex. Nu pune întrebări, doar trage concluzii clare și simple bazate pe date.`
           },
           {
             role: "user",
             content: userPrompt
           }
         ],
-        temperature: 0.5 // Cât de creativ să fie (0.5 e un echilibru bun pentru medici)
+        temperature: 0.5
       })
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("🚨 GROQ A RESPINS CEREREA. Motiv:", errorData);
+      return `Groq API Error: ${errorData.error?.message || "Eroare necunoscută"}`;
+    }
 
-    // Returnăm fix textul generat de AI
+    const data = await response.json();
     return data.choices[0].message.content;
 
   } catch (error) {
-    console.error("Eroare la apelarea API-ului Groq:", error);
-    return "Ne pare rău, asistentul nu a putut procesa informația. Verificați conexiunea.";
+    console.error("🚨 EROARE FATALĂ DE REȚEA:", error);
+    return `Eroare conexiune: ${error.message}`;
+  }
+};
+
+export const generateMedicalCases = async () => {
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+
+  if (!apiKey) {
+    console.error("Lipsește cheia API din .env!");
+    return [];
+  }
+
+  const systemPrompt = `Ești un expert medical și un creator de scenarii clinice.
+Generează 3 cazuri medicale unice și realiste în limba română, în format JSON.
+Fiecare caz trebuie să respecte STRICT structura următoare:
+- "id": string unic (ex: "case-1")
+- "patientName": string (nume și prenume românesc)
+- "age": număr
+- "gender": string
+- "occupation": string
+- "initialSymptoms": array de stringuri (minim 3 simptome)
+- "medicalHistory": array de stringuri
+- "investigations": obiect (chei = analize comune ex: "sânge", "ekg", "radiografie", "ct", "pcr"; valori = rezultatele medicale care susțin sau infirmă diagnosticul)
+- "realDiagnosis": string (diagnosticul corect, precis)
+
+Trebuie să returnezi DIRECT ȘI EXCLUSIV un array JSON, fără formatare Markdown (\`\`\`json), fără explicații suplimentare. Array-ul să aibă exact 3 obiecte.`;
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey.trim()}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: "Generează array-ul cu cele 3 cazuri acum." }
+        ],
+        temperature: 0.8
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API a răspuns cu eroarea: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let rawContent = data.choices[0].message.content.trim();
+
+    if (rawContent.startsWith("\`\`\`json")) {
+      rawContent = rawContent.replace(/^\`\`\`json/, "").replace(/\`\`\`$/, "").trim();
+    } else if (rawContent.startsWith("\`\`\`")) {
+      rawContent = rawContent.replace(/^\`\`\`/, "").replace(/\`\`\`$/, "").trim();
+    }
+
+    const cases = JSON.parse(rawContent);
+    return Array.isArray(cases) ? cases : [];
+
+  } catch (error) {
+    console.error("Eroare la generarea cazurilor dinamice:", error);
+    return [];
   }
 };

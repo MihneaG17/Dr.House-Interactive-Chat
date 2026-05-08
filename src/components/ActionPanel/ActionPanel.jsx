@@ -1,32 +1,50 @@
 import React, { useState } from 'react';
 
-function ActionPanel({ onInvestigationRequest, investigationsHistory }) {
-  const [inputValue, setInputValue] = useState('');
+function ActionPanel({ onInvestigationRequest, investigationsHistory, isThinking, onFinalConclusionsRequest, patientData }) {
+  const availableInvestigations = patientData ? Object.keys(patientData.investigations || {}) : [];
+  const [selectedValue, setSelectedValue] = useState('');
+
+  const currentVal = selectedValue || (availableInvestigations.length > 0 ? availableInvestigations[0] : '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (inputValue.trim() === '') return;
-    onInvestigationRequest(inputValue);
-    setInputValue('');
+    if (currentVal.trim() === '' || isThinking) return;
+    onInvestigationRequest(currentVal);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-        <input 
-          type="text" 
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="ex: Fă-i un RMN..." 
+      <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+        <select 
+          value={currentVal}
+          onChange={(e) => setSelectedValue(e.target.value)}
           style={{ flex: 1, padding: '0.8rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
-        />
+          disabled={isThinking || availableInvestigations.length === 0}
+        >
+          {availableInvestigations.map(inv => (
+            <option key={inv} value={inv}>
+              {inv.charAt(0).toUpperCase() + inv.slice(1)}
+            </option>
+          ))}
+        </select>
         <button 
           type="submit"
-          style={{ padding: '0 1rem', backgroundColor: '#e67e22', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          style={{ padding: '0 1rem', backgroundColor: isThinking ? '#ccc' : '#e67e22', color: 'white', border: 'none', borderRadius: '4px', cursor: isThinking ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+          disabled={isThinking || availableInvestigations.length === 0}
         >
           Cere Analiză
         </button>
       </form>
+
+      <div style={{ marginBottom: '1.5rem', flexShrink: 0 }}>
+        <button 
+          onClick={onFinalConclusionsRequest}
+          style={{ width: '100%', padding: '0.8rem', backgroundColor: isThinking ? '#ccc' : '#8e44ad', color: 'white', border: 'none', borderRadius: '4px', cursor: isThinking ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+          disabled={isThinking}
+        >
+          ⚖️ Cere Concluzii (Finalizare Joc)
+        </button>
+      </div>
 
       <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #eee', borderRadius: '4px', backgroundColor: '#f9f9f9', display: 'flex', flexDirection: 'column' }}>
         <h3 style={{ margin: 0, padding: '0.8rem', backgroundColor: '#ecf0f1', borderBottom: '1px solid #ddd', fontSize: '1.1rem', color: '#2c3e50', position: 'sticky', top: 0 }}>
