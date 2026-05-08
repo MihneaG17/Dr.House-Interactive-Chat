@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import PatientDetails from './components/PatientInfo/PatientDetails';
 import ChatContainer from './components/Chat/ChatContainer';
-// import ActionPanel from './components/ActionPanel/ActionPanel';
+import ActionPanel from './components/ActionPanel/ActionPanel';
 import mockCaseData from './data/mockCase.json';
+import { handleInvestigationRequest } from './services/gameLogic';
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [assistants, setAssistants] = useState(['Cardiolog', 'Boli Infecțioase']);
   const [patientData, setPatientData] = useState(null);
+  const [investigationsHistory, setInvestigationsHistory] = useState([]);
 
   useEffect(() => {
     // Simulăm încărcarea datelor pacientului
@@ -22,6 +24,11 @@ function App() {
     const newAssistants = [...assistants];
     newAssistants[index] = value;
     setAssistants(newAssistants);
+  };
+
+  const handleRequest = (requestText) => {
+    const result = handleInvestigationRequest(requestText, patientData);
+    setInvestigationsHistory(prev => [...prev, { request: requestText, result }]);
   };
 
   if (!gameStarted) {
@@ -92,11 +99,13 @@ function App() {
           <ChatContainer assistants={assistants} />
         </section>
 
-        <section className="action-panel" style={{ flex: 1, border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', backgroundColor: '#fff' }}>
+        <section className="action-panel" style={{ flex: 1, border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
           <h2>Acțiuni & Investigații</h2>
           <hr style={{ margin: '1rem 0', borderColor: '#eee' }} />
-          <p style={{ color: '#666', fontStyle: 'italic' }}>Urmează să fie implementat în Epic 2...</p>
-          {/* <ActionPanel /> */}
+          <ActionPanel 
+            onInvestigationRequest={handleRequest} 
+            investigationsHistory={investigationsHistory} 
+          />
         </section>
       </main>
     </div>
