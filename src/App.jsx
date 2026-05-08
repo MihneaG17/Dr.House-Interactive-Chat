@@ -4,20 +4,51 @@ import ChatContainer from './components/Chat/ChatContainer';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import mockCaseData from './data/mockCase.json';
 import { handleInvestigationRequest } from './services/gameLogic';
+import { sendMessageToAgent } from './services/llmService';
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [assistants, setAssistants] = useState(['Cardiolog', 'Boli Infecțioase']);
   const [patientData, setPatientData] = useState(null);
   const [investigationsHistory, setInvestigationsHistory] = useState([]);
+  
+  // Epic 3: Starea Asistenților și Chat AI
+  const [agentConfidence, setAgentConfidence] = useState([50, 50]);
+  const [messages, setMessages] = useState([]);
+  const [isThinking, setIsThinking] = useState(false);
 
   useEffect(() => {
     // Simulăm încărcarea datelor pacientului
     setPatientData(mockCaseData);
   }, []);
 
-  const handleStartGame = () => {
+  const handleStartGame = async () => {
     setGameStarted(true);
+    
+    const initialMsg = {
+      id: Date.now(),
+      sender: 'Doctor House',
+      role: 'Jucător',
+      text: 'Avem un pacient cu febră, tuse și dureri toracice. Păreri?',
+      type: 'user'
+    };
+    setMessages([initialMsg]);
+    setIsThinking(true);
+
+    let currentMessages = [initialMsg];
+    for (let i = 0; i < assistants.length; i++) {
+      const response = await sendMessageToAgent(assistants[i], currentMessages, initialMsg.text);
+      const agentMsg = {
+        id: Date.now() + Math.random(),
+        sender: `Agent ${i + 1} (${assistants[i]})`,
+        role: assistants[i],
+        text: response,
+        type: `agent${i + 1}`
+      };
+      currentMessages = [...currentMessages, agentMsg];
+      setMessages(currentMessages);
+    }
+    setIsThinking(false);
   };
 
   const handleAssistantChange = (index, value) => {
@@ -26,9 +57,46 @@ function App() {
     setAssistants(newAssistants);
   };
 
-  const handleRequest = (requestText) => {
+  const handleRequest = async (requestText) => {
     const result = handleInvestigationRequest(requestText, patientData);
     setInvestigationsHistory(prev => [...prev, { request: requestText, result }]);
+    
+    const isRelevant = result !== "Analiză indisponibilă sau irelevantă pentru acest caz. Rezultate în parametri normali.";
+    
+    setAgentConfidence(prev => prev.map(conf => {
+      if (isRelevant) {
+        const change = Math.floor(Math.random() * 30) - 10;
+        return Math.min(100, Math.max(0, conf + change));
+      } else {
+        return Math.max(0, conf - 5);
+      }
+    }));
+
+    const newMsg = {
+      id: Date.now(),
+      sender: 'Sistem',
+      role: 'Sistem',
+      text: `Rezultat analiză (${requestText}): ${result}`,
+      type: 'system'
+    };
+    
+    let currentMessages = [...messages, newMsg];
+    setMessages(currentMessages);
+    setIsThinking(true);
+
+    for (let i = 0; i < assistants.length; i++) {
+      const response = await sendMessageToAgent(assistants[i], currentMessages, newMsg.text);
+      const agentMsg = {
+        id: Date.now() + Math.random(),
+        sender: `Agent ${i + 1} (${assistants[i]})`,
+        role: assistants[i],
+        text: response,
+        type: `agent${i + 1}`
+      };
+      currentMessages = [...currentMessages, agentMsg];
+      setMessages(currentMessages);
+    }
+    setIsThinking(false);
   };
 
   if (!gameStarted) {
@@ -96,7 +164,12 @@ function App() {
         <section className="chat-panel" style={{ flex: 2, border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
           <h2>Consiliu Medical</h2>
           <hr style={{ margin: '1rem 0', borderColor: '#eee' }} />
-          <ChatContainer assistants={assistants} />
+          <ChatContainer 
+            assistants={assistants} 
+            messages={messages} 
+            isThinking={isThinking} 
+            agentConfidence={agentConfidence} 
+          />
         </section>
 
         <section className="action-panel" style={{ flex: 1, border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
