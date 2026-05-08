@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function ChatContainer({ assistants, messages, isThinking, agentConfidence }) {
+function ChatContainer({ assistants, messages, isThinking, agentConfidence, onSendMessage }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (inputValue.trim() !== '' && !isThinking) {
+      onSendMessage(inputValue);
+      setInputValue('');
+    }
+  };
+
   const getMessageStyles = (type) => {
     switch (type) {
       case 'user':
@@ -17,10 +27,10 @@ function ChatContainer({ assistants, messages, isThinking, agentConfidence }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Agent Status Area (Confidence Bars) */}
       {agentConfidence && (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #eee', flexShrink: 0 }}>
           {assistants.map((assistant, index) => (
             <div key={index} style={{ flex: 1, padding: '0.5rem', backgroundColor: '#fafafa', borderRadius: '8px', border: '1px solid #ddd' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
@@ -67,20 +77,23 @@ function ChatContainer({ assistants, messages, isThinking, agentConfidence }) {
         )}
       </div>
       
-      <div className="chat-input-area" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
+      <form onSubmit={handleSubmit} className="chat-input-area" style={{ marginTop: 'auto', flexShrink: 0, display: 'flex', gap: '0.5rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
         <input 
           type="text" 
-          placeholder="Spune ceva asistenților tăi (în curând)..." 
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Spune ceva asistenților tăi..." 
           style={{ flex: 1, padding: '0.8rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
-          disabled
+          disabled={isThinking}
         />
         <button 
-          style={{ padding: '0 1.5rem', backgroundColor: '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-          disabled
+          type="submit"
+          style={{ padding: '0 1.5rem', backgroundColor: isThinking ? '#ccc' : '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: isThinking ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+          disabled={isThinking}
         >
           Trimite
         </button>
-      </div>
+      </form>
     </div>
   );
 }
