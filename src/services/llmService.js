@@ -1,29 +1,54 @@
-import { agentPrompts } from '../data/prompts';
+// src/services/llmService.js
 
-export const sendMessageToAgent = async (agentRole, contextMessages, newInput) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Simulăm răspunsul LLM-ului în funcție de rol
-      const isInvestigation = newInput.toLowerCase().includes('rezultat analiză');
-      let responseText = '';
+export const fetchAiResponse = async (agentRole, userPrompt) => {
+  // Preluăm cheia secretă din fișierul .env
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
-      if (isInvestigation) {
-        if (agentRole === 'Cardiolog') {
-          responseText = 'Aceste analize îmi ridică unele semne de întrebare. EKG-ul și markerii cardiaci sunt cruciali pentru excluderea unui infarct. Rămân precaut, dar tabloul se complică.';
-        } else if (agentRole === 'Boli Infecțioase') {
-          responseText = 'Aha! Rezultatele susțin ipoteza unui proces infecțios! Cred că suntem pe drumul cel bun. Probabil e nevoie de un tratament antibiotic țintit sau antiviral.';
-        } else if (agentRole === 'Neurolog') {
-          responseText = 'Din punct de vedere neurologic, nu văd modificări critice momentan. Voi continua să analizez situația detașat.';
-        } else if (agentRole === 'Pneumolog') {
-          responseText = 'Radiografia și simptomele arată clar o afectare respiratorie. Infiltratele interstițiale indică de obicei o pneumonie atipică. E exact domeniul meu.';
-        } else {
-          responseText = 'Să integrăm aceste date noi în tabloul clinic general. E un caz interesant.';
-        }
-      } else {
-        responseText = `În calitate de ${agentRole}, cred că istoricul și simptomele arată o direcție destul de clară. Mă bazez pe experiența mea clinică, dar aș vrea mai multe investigații specifice.`;
-      }
+  if (!apiKey) {
+    console.error("Lipsește cheia API din .env!");
+    return "Eroare: Cheia API nu este configurată.";
+  }
 
-      resolve(responseText);
-    }, 2000); // Întârziere de 2 secunde pentru a simula "gândirea" AI
-  });
+  // AICI ESTE SECRETUL PENTRU BAREM: 2 Modele diferite!
+  // Setăm un model default (Llama 3 de la Meta) pentru primul agent
+  let modelToUse = "llama3-8b-8192";
+
+  // Dacă agentul are alt rol (ex: Boli Infecțioase), folosim alt model (Mixtral)
+  // *Schimbă "Boli Infecțioase" cu specializarea pe care o ai tu în aplicație pentru Agentul 2
+  if (agentRole === "Boli Infecțioase") {
+    modelToUse = "mixtral-8x7b-32768";
+  }
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: modelToUse,
+        messages: [
+          {
+            role: "system",
+            content: `Ești un medic specialist cu rolul de: ${agentRole}. Analizează cazul și fii concis. Nu pune întrebări, doar trage concluzii medicale bazate pe date.`
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        temperature: 0.5 // Cât de creativ să fie (0.5 e un echilibru bun pentru medici)
+      })
+    });
+
+    const data = await response.json();
+
+    // Returnăm fix textul generat de AI
+    return data.choices[0].message.content;
+
+  } catch (error) {
+    console.error("Eroare la apelarea API-ului Groq:", error);
+    return "Ne pare rău, asistentul nu a putut procesa informația. Verificați conexiunea.";
+  }
 };
