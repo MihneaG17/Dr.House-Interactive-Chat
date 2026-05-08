@@ -1,31 +1,6 @@
 import React from 'react';
 
-function ChatContainer({ assistants }) {
-  // Mock conversation for UI demonstration purposes
-  const mockMessages = [
-    {
-      id: 1,
-      sender: 'Doctor House',
-      role: 'Jucător',
-      text: 'Avem un pacient de 45 de ani cu febră, tuse și dureri toracice. Păreri?',
-      type: 'user'
-    },
-    {
-      id: 2,
-      sender: `Agent 1 (${assistants[0]})`,
-      role: assistants[0],
-      text: 'Având în vedere tusea seacă, febra și durerea la inspir profund, ar putea fi o infecție respiratorie, poate chiar virală. Aș recomanda o radiografie toracică pentru a exclude o pneumonie.',
-      type: 'agent1'
-    },
-    {
-      id: 3,
-      sender: `Agent 2 (${assistants[1]})`,
-      role: assistants[1],
-      text: 'Sunt de acord cu o posibilă pneumonie, dar să nu ignorăm durerea toracică la un pacient cu istoric de hipertensiune și tată cu infarct. Ar trebui să excludem și un sindrom coronarian acut. Un EKG ar fi prudent.',
-      type: 'agent2'
-    }
-  ];
-
+function ChatContainer({ assistants, messages, isThinking, agentConfidence }) {
   const getMessageStyles = (type) => {
     switch (type) {
       case 'user':
@@ -34,6 +9,8 @@ function ChatContainer({ assistants }) {
         return { backgroundColor: '#f3e5f5', borderLeft: '4px solid #9c27b0', alignSelf: 'flex-start', marginRight: '20%' };
       case 'agent2':
         return { backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50', alignSelf: 'flex-start', marginRight: '20%' };
+      case 'system':
+        return { backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800', alignSelf: 'center', width: '80%', fontStyle: 'italic', textAlign: 'center' };
       default:
         return { backgroundColor: '#f5f5f5', borderLeft: '4px solid #9e9e9e' };
     }
@@ -41,8 +18,33 @@ function ChatContainer({ assistants }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Agent Status Area (Confidence Bars) */}
+      {agentConfidence && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
+          {assistants.map((assistant, index) => (
+            <div key={index} style={{ flex: 1, padding: '0.5rem', backgroundColor: '#fafafa', borderRadius: '8px', border: '1px solid #ddd' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Agent {index + 1} ({assistant})</span>
+                <span style={{ fontSize: '0.9rem', color: '#666' }}>{agentConfidence[index]}%</span>
+              </div>
+              {/* Confidence Bar */}
+              <div style={{ width: '100%', backgroundColor: '#e0e0e0', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
+                <div 
+                  style={{ 
+                    width: `${agentConfidence[index]}%`, 
+                    height: '100%', 
+                    backgroundColor: index === 0 ? '#9c27b0' : '#4caf50',
+                    transition: 'width 0.5s ease-in-out'
+                  }} 
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="chat-messages" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.5rem 0' }}>
-        {mockMessages.map((msg) => (
+        {messages && messages.map((msg) => (
           <div 
             key={msg.id} 
             style={{ 
@@ -58,12 +60,17 @@ function ChatContainer({ assistants }) {
             <p style={{ margin: 0, lineHeight: '1.4', color: '#444' }}>{msg.text}</p>
           </div>
         ))}
+        {isThinking && (
+          <div style={{ alignSelf: 'flex-start', padding: '0.5rem 1rem', backgroundColor: '#f0f0f0', borderRadius: '8px', fontStyle: 'italic', color: '#666' }}>
+            Asistenții se consultă... (Loading...)
+          </div>
+        )}
       </div>
       
       <div className="chat-input-area" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
         <input 
           type="text" 
-          placeholder="Spune ceva asistenților tăi..." 
+          placeholder="Spune ceva asistenților tăi (în curând)..." 
           style={{ flex: 1, padding: '0.8rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
           disabled
         />
